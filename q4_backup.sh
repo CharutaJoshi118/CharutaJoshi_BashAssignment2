@@ -1,4 +1,6 @@
 #!/bin/bash
+
+#colour codes
 red='\033[31m'
 green='\033[32m'
 yellow='\033[33m'
@@ -9,6 +11,7 @@ echo -e "${red}======Automated Backup Script========${NC}"
 echo -e "${green}Enter directory to backup :${NC} "
 read src
 
+#Check if source directory exists, exit if not found
 if [ ! -d "$src" ]; then
   echo "Source directory not found"
   exit
@@ -20,6 +23,7 @@ read dest
 #create desti if not exists
 mkdir -p "$dest"
 
+#Show backup type options to user
 echo " Select Backup Type :"
 echo "1. Simple Copy "
 echo "2. Compressed Archive"
@@ -31,9 +35,11 @@ echo "starting backup.... "
 echo "Source :$src"
 echo "Destination :$dest"
 
+#Create a unique backup name using current timestamp
 time_stamp=$(date +"%Y%m%d_%H%M%S")
 name="backup_$time_stamp"
 
+#Record start time to calculate how long backup takes
 start=$(date +%s)
 
 if [ "$choice" -eq 1 ]; then
@@ -49,6 +55,7 @@ else
   exit
 fi
 
+#Record end time and calculate total duration
 end=$(date +%s)
 duration=$((end-start))
 
@@ -59,7 +66,7 @@ echo "Backup Details :"
 echo "File : $(basename $backup_path)"
 echo "location : $dest"
 echo -n "size : "
-du -sh "$backup_path" | cut -f1
+du -sh "$backup_path" | cut -f1  #du -sh gives human readable size
 echo "time taken : $duration seconds"
 
 logfile="$dest/backup.log"
@@ -71,6 +78,7 @@ echo "location :$dest" >> "$logfile"
 echo "size: $size"  >> "$logfile"
 echo "duration: $duration seconds" >> "$logfile"
 
+#Check how many backups exist and remove old ones if more than 5
 echo ""
 echo "Checking old backup......"
 cd "$dest" || exit

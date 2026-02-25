@@ -1,9 +1,12 @@
 #!/bin/bash
 
+#colour codes
 Red='\033[31m'
 Yellow='\033[33m'
 Blue='\033[34m'
 NC='\033[0m'
+
+#Loop keeps the menu running until user chooses to exit
 while true
 do
 
@@ -23,12 +26,15 @@ echo "10.Exit                                "
 echo -n "enter choice :"
 read ch
 
+#case statement handles each menu option
 case $ch in
+
+#List all files with details using ls -lh
 1)  echo -e  "${Blue}File present :${NC}"
     ls -lh
     ;;
 
-
+# Create a new directory after checking if it already exists
 2)  echo -e  "${Blue}Directory name ???${NC}"
     read dirname
 
@@ -41,6 +47,7 @@ case $ch in
     fi
     ;;
 
+#Create a new file using touch, checks if file already exists
 3)  echo -e "${Blue}File name :${NC} "
     read filename 
 
@@ -53,6 +60,7 @@ case $ch in
    fi
    ;;
 
+#Delete a file - asks for confirmation before deleting
 4) echo -e "${Blue}Enter the file to delete :${NC}"
    read filename
   
@@ -72,7 +80,7 @@ case $ch in
     fi
     ;;
 
-
+#Rename a file using mv command
 5) echo -e  "${Blue}Old name of the file :${NC}"
    read old
    echo -e  "${Blue}New name of the file :${NC}"
@@ -87,18 +95,20 @@ case $ch in
    fi
    ;;
 
-
+#Search for a file using find command
 6) echo -e "${Blue}Enter the name to search :${NC}"
    read name 
    find . -name "$name"
    ;;
 
+#Count total files and directories separately
 7) echo -e "${Blue}Total files :${NC}"
    find . -type f | wc -l
    echo -e "${Yellow}Total directories :${NC}"
    find . -type d | wc -l
    ;;
 
+#View permissions of a file using ls -l
 8)  echo -e "${Blue}Enter file name :${NC}"
     read filename
     if [ -e "$filename" ]
@@ -110,6 +120,7 @@ case $ch in
     fi
     ;;
 
+#Copy a file to a new destination using cp
 9)  echo -e "${Blue}Enter the source file :${NC}"
     read src
     
@@ -124,7 +135,7 @@ case $ch in
    fi
    ;;
 
-
+#Exit the program using break to stop the while loop
 10) echo -e "${Blue}Exiting...${NC}"
     break
     ;;

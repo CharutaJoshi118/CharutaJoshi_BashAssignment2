@@ -1,4 +1,6 @@
 #!/bin/bash
+
+#colour codes
 red='\033[31m'
 green='\033[32m'
 yellow='\033[33m'
@@ -7,6 +9,7 @@ NC='\033[0m'
 echo -e "${red}========USER REPORT============${NC}"
 echo""
 
+#Count total users, system users and regular users from /etc/passwd
 total_users=$(cat /etc/passwd | wc -l)
 syst_user=$(awk -F: '$3 < 1000 {print $1}' /etc/passwd | wc -l)
 regu_user=$(awk -F: '$3 >= 1000 {print $1}' /etc/passwd | wc -l)
@@ -20,12 +23,14 @@ echo    "Total Regular users (UID>=1000) : $regu_user"
 echo    "Users currently logged in       : $logged_in"
 echo ""
 
-
+#displays formatted table of user details
 echo -e "${green}-----USER DETAILS TABLE---------${NC}"
 printf "%-15s %-8s %-20s %-15s  %-20s\n" "Username" "UID" "Home Directory" "Shell" "Last Login" 
 
+#reads user info
 awk -F: '$3>=1000 && $1!="nobody" {print $1,$3,$6,$7}'  /etc/passwd | while IFS=: read user uid home shell
 do
+    #gets last login time for each user
     last_login=$(last -n 1 $user 2>/dev/null | head -1 | awk '{print $4,$5,$6,$7,$8}')
     if [[ "$last_login" == "" || "$last_login" == "wtmp begins"* ]]; then
         last_login="Never"
@@ -34,7 +39,7 @@ do
 done
 echo ""
 
-
+#counts members in each
 echo -e "${green}-----GROUP INFORMATION---------${NC}"
 cut -d: -f1 /etc/group | while read grp
 do
@@ -46,6 +51,7 @@ echo ""
 
 
 echo -e "${green}-----SECURITY CHECKS---------${NC}"
+#Check for users with UID 0 - these have root level privileges
 echo -e "${yellow}Users with root privilege  (UID 0) :${NC} "
 awk -F : '$3==0 {print $1}' /etc/passwd
 
@@ -55,6 +61,7 @@ awk -F : '($2=="!" || $2=="*") {print $1}' /etc/shadow 2>/dev/null
 echo ""
 
 echo -e  "${yellow}Inactive users (never logged in) : ${NC}"
+#Find users who have never logged in
 awk -F : '$3>=1000 {print $1}' /etc/passwd | while read user
 do
    last $user |grep -q "$user"
@@ -66,7 +73,7 @@ done
 
 
 
-
+#generates HTML report
 HTML_FILE="user_report.html"
 
 echo "Generating HTML report..."
@@ -76,6 +83,7 @@ system_users=$(awk -F: '$3<1000 {count++} END{print count}' /etc/passwd)
 regular_users=$(awk -F: '$3>=1000 {count++} END{print count}' /etc/passwd)
 logged_in=$(who | wc -l)
 
+#Use heredoc (<<EOF) to write HTML content to file
 cat <<EOF > $HTML_FILE
 <html>
 <head>
@@ -117,6 +125,7 @@ do
     echo "<tr><td>$user</td><td>$uid</td><td>$expiry</td></tr>" >> $HTML_FILE
 done
 
+#Close HTML file with a simple bar graph showing user distribution
 cat <<EOF >> $HTML_FILE
 </table>
 
@@ -132,7 +141,7 @@ EOF
 echo "HTML report saved as $HTML_FILE"
 
 
-
+#Ask user if they want to send the report via email
 read -p "Do you want to email the report? (y/n): " choice
 if [ "$choice" = "y" ]; then
     read -p "Enter email address: " email
