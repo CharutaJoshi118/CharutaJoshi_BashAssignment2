@@ -1,0 +1,5 @@
+Host,Status,Avg time,Timestamp
+127.0.0.1,Reachable,0.046ms,2026-03-23 23:30:41
+192.168.1.1,Unreachable or invalid input,N/A,2026-03-23 23:30:41
+google.com,Reachable,44.182ms,2026-03-23 23:30:41
+8.8.8.8,Reachable,621.640ms,2026-03-23 23:30:41
